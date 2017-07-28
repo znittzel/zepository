@@ -6,6 +6,7 @@
 
 namespace Znittzel\Zepository\Controllers;
 
+use Znittzel\Zepository\Repositories\Repository;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
