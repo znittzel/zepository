@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Extensions;
+namespace Znittzel\Zepository\Extensions;
 
 use Illuminate\Auth\Authenticatable;
 use Vinelab\NeoEloquent\Eloquent\Model;

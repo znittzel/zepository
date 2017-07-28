@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Extensions;
+namespace Znittzel\Zepository\Extensions;
 
 class SResponse {
 	public $hasErrors = false;

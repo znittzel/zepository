@@ -4,7 +4,7 @@
  * Created by Rikard Olsson @ 2017
  */
 
-namespace App\Znittzel;
+namespace Znittzel\Zepository\Controllers;
 
 use App\Http\Controllers\Controller;
 

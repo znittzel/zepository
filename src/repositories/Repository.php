@@ -4,7 +4,7 @@
  * Created by Rikard Olsson @ 2017
  */
 
-namespace App\Znittzel;
+namespace Znittzel\Zepository\Repositories;
 
 use Illuminate\Http\Request;
 
