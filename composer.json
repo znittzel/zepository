@@ -1,5 +1,5 @@
 {
-    "name": "Znittzel/Zepository",
+    "name": "znittzel/zepository",
     "type": "library",
     "description": ":A simple resource and repository module for easy going api's.",
     "keywords": [
