@@ -33,7 +33,7 @@ abstract class NeoRepositoryController extends Controller implements iNeoReposit
     * Constructor takes a class as parameter. Send the class model as such - Model::class.
     */
 	public function __construct($class_model) {
-		$this->_repository = new Repository($this, $class_model);
+		$this->_repository = new NeoRepository($this, $class_model);
 	}
 
     /**

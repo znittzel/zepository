@@ -32,8 +32,8 @@ abstract class RepositoryController extends Controller implements iRepositoryCon
     /**
     * Constructor takes a class as parameter. Send the class model as such - Model::class.
     */
-    public function __construct($controller, $class_model) {
-        $this->_repository = new Repository($controller, $class_model);
+    public function __construct($class_model) {
+        $this->_repository = new Repository($this, $class_model);
     }
 
     /**
