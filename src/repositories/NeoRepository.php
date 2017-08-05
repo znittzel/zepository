@@ -61,7 +61,7 @@ class NeoRepository {
      * Returns a query instance of givin relation model
      */
     public function getRelationInstance($relation) {
-        $class = "App\\".$relation;
+        $class = "App\\".studly_case(str_singular($relation));
 
         return new $class();
     }
