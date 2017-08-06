@@ -24,14 +24,14 @@ class NeoRepository {
      */
     protected $_controller;
 
-	/**
-	 * $_filters - What's allowed to use as a filter.
-	 */
-	protected $_filters = []; 
+    /**
+     * $_filters - What's allowed to use as a filter.
+     */
+    protected $_filters = []; 
 
-	/**
-	 * $_orders - What order direction can be used.
-	 */
+    /**
+     * $_orders - What order direction can be used.
+     */
     private $_orders = [
         "asc",
         "desc"
@@ -222,7 +222,7 @@ class NeoRepository {
      */
     public function with(&$query, &$errors, $withs) {
 
-    	// Initialize a particular error array to include specific with-errors.
+        // Initialize a particular error array to include specific with-errors.
         $with_errors = [];
 
         // Get class model instance
@@ -252,7 +252,7 @@ class NeoRepository {
                 $relation = str_replace('!', '', $relation);
             }
 
-        	// If relation is allowed, included it in query else set is as an error
+            // If relation is allowed, included it in query else set is as an error
             if (in_array($relation, $instance->relations)) {
                 // Include the relation in query
                 $query->with($relation);
@@ -290,7 +290,7 @@ class NeoRepository {
 
         }
 
-    	// Explodes string into array where 0 is what to order by and 1 is if asc or desc.
+        // Explodes string into array where 0 is what to order by and 1 is if asc or desc.
         $order_result = explode(':', $orderBy);
 
         // Initialize a default order direction
@@ -299,7 +299,7 @@ class NeoRepository {
         // Check to see if an order direction was provided
         if (count($order_result) == 2) {
 
-        	// Set the order direction that was provided
+            // Set the order direction that was provided
             $order = $order_result[1];
 
             // Set what to order by from string
@@ -323,7 +323,7 @@ class NeoRepository {
 
         } else { 
 
-        	// If the order by was not allowed, push it to errors array
+            // If the order by was not allowed, push it to errors array
             array_push($errors, ['orderBy' => $orderBy]);
         }
     }
@@ -332,7 +332,7 @@ class NeoRepository {
      * This filters by adding constraints to a query. The input of filters_string HAS to be written in this format (example): "price[1000:12000],datetime[2017-02-03:2017-04-04]"
      */
     public function filter(&$query, &$errors, $filters_string) {
-    	
+        
         // Filter-string is array, return with error.
         if (is_array($filters_string)) {
             array_push($errors, ["filter" => "incorrect_filter_specified"]);
@@ -372,7 +372,7 @@ class NeoRepository {
 
             // If no match, push error and break iteration
             if (empty($match) || count($match) < 3 ) {
-            	array_push($filter_errors, ["could_not_use_filter" => $filter]);
+                array_push($filter_errors, ["could_not_use_filter" => $filter]);
                 break;
             }
 
@@ -382,17 +382,17 @@ class NeoRepository {
             
             // Create and validate data with Validator
             $validation = \Validator::make([
-            		$filter_key."_min" => $lower, 
-            		$filter_key."_max" => $higher
-            	], [
-            		$filter_key."_min" => $this->_filters[$filter_key]["validation"],
-            		$filter_key."_max" => $this->_filters[$filter_key]["validation"]
-            	]);
+                    $filter_key."_min" => $lower, 
+                    $filter_key."_max" => $higher
+                ], [
+                    $filter_key."_min" => $this->_filters[$filter_key]["validation"],
+                    $filter_key."_max" => $this->_filters[$filter_key]["validation"]
+                ]);
 
             // Push error and break iteration if validation failed
             if ($validation->fails()) {
-            	array_push($filter_errors, ["filter_not_valid_values" => $validation->errors()]);
-            	break;
+                array_push($filter_errors, ["filter_not_valid_values" => $validation->errors()]);
+                break;
             }
 
             // Everything is clear. Use provided filter function with lower and higher value
@@ -409,26 +409,26 @@ class NeoRepository {
      */
     public function paginate($query, $request) {
         // Get lowest pagination number
-		$paginate = $this->_paginateLimits["lower"];
+        $paginate = $this->_paginateLimits["lower"];
 
         // Get paginate number
         $number = $request->paginate;
 
         // Check if number is valid
-		if (isset($number) && is_numeric($number)) { 
+        if (isset($number) && is_numeric($number)) { 
 
             // Convert number to integer
-			$number += 0;
+            $number += 0;
 
             // Check if number is in range
-			if ($number >= $this->_paginateLimits["lower"] 
-				&& $number <= $this->_paginateLimits["higher"] 
+            if ($number >= $this->_paginateLimits["lower"] 
+                && $number <= $this->_paginateLimits["higher"] 
 
                 // ...and is not a float
-				&& !is_float($number)) 
-			{
-				$paginate = $number;
-			}
+                && !is_float($number)) 
+            {
+                $paginate = $number;
+            }
 
             // Paginate query
             $paginateResult = $query->paginate($paginate);
@@ -438,11 +438,11 @@ class NeoRepository {
 
             // Return result
             return $paginateResult;
-		}
+        }
 
         // Return all
-		return $query->get();
-	}
+        return $query->get();
+    }
 
     /**
      * Querying based on where as in a where-clause
@@ -533,7 +533,7 @@ class NeoRepository {
                             $subKey = $subKeyValue[1];
 
                             // Check that key is a relation
-                            if (in_array($relation, $this->_relations)) {
+                            if (in_array($relation, $this->getModelInstance()->relations)) {
 
                                 // Query on relation
                                 $query->whereHas($relation, function($query) use ($subKey, $operator, $value) {

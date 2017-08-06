@@ -27,28 +27,28 @@ interface iNeoRepositoryController {
 
 abstract class NeoRepositoryController extends Controller implements iNeoRepositoryController {
 
-	protected $_repository;
+    protected $_repository;
 
     /**
     * Constructor takes a class as parameter. Send the class model as such - Model::class.
     */
-	public function __construct($class_model) {
-		$this->_repository = new NeoRepository($this, $class_model);
-	}
+    public function __construct($class_model) {
+        $this->_repository = new NeoRepository($this, $class_model);
+    }
 
     /**
     * Builds a default response.
     */
-	public function buildResponse($result, $errors = [], $code = 200) {
-		$res = new \StdClass;
+    public function buildResponse($result, $errors = [], $code = 200) {
+        $res = new \StdClass;
 
-		$res->result = $result;
-		$res->errors = $errors;
+        $res->result = $result;
+        $res->errors = $errors;
 
-		return response()->json($res, $code);
-	}
+        return response()->json($res, $code);
+    }
 
-	/**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -92,10 +92,23 @@ abstract class NeoRepositoryController extends Controller implements iNeoReposit
                     continue;
                 }
 
-                $object->$relation()->save($relation_object);
+                // If this fails, delete the saved object
+                try {
+                    
+                    // Try to save relation(s)
+                    $object->$relation()->save($relation_object);
 
-                // Includes relation in response
-                $object->$relation;
+                    // Includes relation in response
+                    $object->$relation;
+
+                } catch (\Exception $e) {
+
+                    // Delete object if save failed
+                    $object->delete();
+
+                    // Throw the exception
+                    throw $e;
+                }
             }
 
             if (!empty($relation_errors))
@@ -151,10 +164,23 @@ abstract class NeoRepositoryController extends Controller implements iNeoReposit
                     continue;
                 }
 
-                $object->$relation()->attach($relation_object);
+                // If this fails, delete the saved object
+                try {
+                    
+                    // Try to save relation(s)
+                    $object->$relation()->save($relation_object);
 
-                // Includes relation in response
-                $object->$relation;
+                    // Includes relation in response
+                    $object->$relation;
+
+                } catch (\Exception $e) {
+
+                    // Delete object if save failed
+                    $object->delete();
+
+                    // Throw the exception
+                    throw $e;
+                }
             }
 
             if (!empty($relation_errors))
