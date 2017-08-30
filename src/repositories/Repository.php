@@ -25,16 +25,6 @@ class Repository {
     protected $_controller;
 
     /**
-     * $_filters - What's allowed to use as a filter.
-     */
-    protected $_filters = []; 
-
-    /**
-     * $_orderBys - What's allowed to use as order by.
-     */
-    protected $_orderBys = []; 
-
-    /**
      * $_orders - What order direction can be used.
      */
     private $_orders = [
@@ -278,11 +268,14 @@ class Repository {
             $orderBy = $order_result[0];
         }
 
+        // Get model instance 
+        $instance = $this->getModelInstance();
+
         // Get fillables from model
-        $fillables = $this->getModelInstance()->getFillable();
+        $fillables = $instance->getFillable();
 
         // Check if the order by is allowed
-        if (in_array($orderBy, $fillables) || in_array($orderBy, $this->_orderBys)) {
+        if (in_array($orderBy, $fillables) || in_array($orderBy, $instance->orderBys)) {
 
             // Check if orderBy is a order on a relation
             $relation_property = explode('.', $orderBy);
@@ -478,8 +471,17 @@ class Repository {
                     // Check if model contains key
                     if (in_array($key, $fillables)) {
 
-                        // Perform where query
-                        $query->where($key, $operator, $value);
+                        if (strtolower($value) == "null") {
+
+                            // Perform as null-query
+                            $query->whereNull($key);
+
+                        } else {
+
+                            // Perform where query
+                            $query->where($key, $operator, $value);
+
+                        }
 
                     } else {
 
