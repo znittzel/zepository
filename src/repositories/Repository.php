@@ -4,7 +4,7 @@
  * Created by Rikard Olsson @ 2017
  */
 
-namespace Znittzel\Zepository\Repositories;
+namespace App\Znittzel\Zepository\Repositories;
 
 use Illuminate\Http\Request;
 
@@ -31,6 +31,11 @@ class Repository {
         "asc",
         "desc"
     ];
+
+    /**
+     * Which relations that are available. Should be overrided.
+     */
+    public $relations = [];
 
     /**
      * $_paginateLimits - Limits of what is ok to paginate 
@@ -229,8 +234,11 @@ class Repository {
                 $relation = str_replace('!', '', $relation);
             }
 
+            // Get models relations
+            $m_relations = $this->getModelInstance()->relations ? $this->getModelInstance()->relations : [];
+
             // If relation is allowed, included it in query else set is as an error
-            if (in_array($relation, $this->getModelInstance()->relations)) {
+            if (in_array($relation, $m_relations)) {
                 // Include the relation in query
                 $query->with($relation);
 
@@ -424,45 +432,41 @@ class Repository {
 
             // Iterate through where_records
             foreach ($where_records as $record) {
-                // Init vars
-                $key = null;
-                $operator = null;
-                $value = null; 
 
                 // Translate into key and value as: key (e.g. "first_name") and value (e.g. "Rikard")
+                preg_match("/(.+)(=<|=>|=|\?)(.+)/", $record, $record_match);
 
-                // Check which operator is used
-                $equal_record = explode('=', $record);
-                $greater_record = explode('>', $record);
-                $less_record = explode('<', $record);
+                if (empty($record_match)){
+                    array_push($where_errors, ["could_not_parse" => $record]);
+                    continue;
+                }
 
-                if (count($equal_record) > 1) {
-                    $equalGreater_record = explode('>=', $record);
-                    $equalLess_record = explode('<=', $record);
+                // Init vars
+                $key = $record_match[1];
+                $operator = null;
+                $value = $record_match[3];
 
-                    // Check if =, >= or <=
-                    if (count($equalGreater_record) > 1) {
-                        $operator = ">=";
-                        $key = $equalGreater_record[0];
-                        $value = $equalGreater_record[1];
-                    } else if (count($equalLess_record) > 1) {
+                switch ($record_match[2]) {
+                    case '=<':
                         $operator = "<=";
-                        $key = $equalLess_record[0];
-                        $value = $equalLess_record[1];
-                    } else {
-                        $operator = "=";
-                        $key = $equal_record[0];
-                        $value = $equal_record[1];
-                    }
+                        break;
 
-                } else if (count($greater_record) > 1) {
-                    $operator = ">";
-                    $key = $greater_record[0];
-                    $value = $greater_record[1];
-                } else if (count($less_record) > 1) {
-                    $operator = "<";
-                    $key = $less_record[0];
-                    $value = $less_record[1];
+                    case '=>':
+                        $operator = ">=";
+                        break;
+
+                    case '=':
+                        $operator = "=";
+                        break;
+
+                    case '?':
+                        $operator = "like";
+                        $value = '%'.$value.'%';
+                        break;
+                    
+                    default:
+                        $operator = '=';
+                        break;
                 }
 
                 // Check that all vars has value
