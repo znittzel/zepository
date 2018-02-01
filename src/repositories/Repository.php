@@ -53,7 +53,7 @@ class Repository {
     /**
      * Returns a query instance of givin class model
      */
-    private function getModelInstance() {
+    public function getModelInstance() {
         return new $this->_classModel;
     }
 

@@ -75,6 +75,19 @@ abstract class RepositoryController extends Controller implements iRepositoryCon
 
         $object->save();
 
+        // If relations should be included in response
+        if ($request->return_relations) {
+
+            // Get models relations
+            $m_relations = $this->_repository->getModelInstance()->relations ? $this->_repository->getModelInstance()->relations : [];
+                
+            // Check if including relation is ok
+            foreach ($request->return_relations as $relation) {
+                if (in_array($relation, $m_relations))
+                    $object->$relation;
+            }
+        }
+
         return $this->buildResponse($object);
     }
 
@@ -106,6 +119,19 @@ abstract class RepositoryController extends Controller implements iRepositoryCon
             return $this->buildResponse(null, $errors);
 
         $object->update();
+
+        // If relations should be included in response
+        if ($request->return_relations) {
+
+            // Get models relations
+            $m_relations = $this->_repository->getModelInstance()->relations ? $this->_repository->getModelInstance()->relations : [];
+                
+            // Check if including relation is ok
+            foreach ($request->return_relations as $relation) {
+                if (in_array($relation, $m_relations))
+                    $object->$relation;
+            }
+        }
 
         return $this->buildResponse($object);
     }
